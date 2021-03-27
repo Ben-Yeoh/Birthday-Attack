@@ -27,18 +27,18 @@ def file_to_string(file):
     with open(file, "r") as f:
         return f.read().encode('utf-8')
 
-def generate_hashes(file, amount):
+def generate_hashes(file, num_hashes):
     hashes = []
     s = file_to_string(file)
-    for i in range(amount):
+    for i in range(num_hashes):
         hashes.append(hash_string(s))
     return hashes
 
 
-def birthday_attack(digits, real, fake):
+def birthday_attack(digits, num_hashes, real, fake):
     digits = int(digits)
-    real_hashes = generate_hashes(real)
-    fake_hashes = generate_hashes(fake)
+    real_hashes = generate_hashes(real, num_hashes)
+    fake_hashes = generate_hashes(fake, num_hashes)
 
     for real_hash in real_hashes:
         for fake_hash in fake_hashes:
@@ -46,4 +46,4 @@ def birthday_attack(digits, real, fake):
                 print(f"Collision found (last {digits} digits):\n{real_hash}\n{fake_hash}\n")
 
 
-birthday_attack(sys.argv[1], sys.argv[2], sys.argv[3])
+birthday_attack(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
