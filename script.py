@@ -34,9 +34,9 @@ def generate_hashes(file, num_hashes):
         hashes.append(hash_string(s))
     return hashes
 
-
 def birthday_attack(digits, num_hashes, real, fake):
     digits = int(digits)
+    num_hashes = int(num_hashes)
     real_hashes = generate_hashes(real, num_hashes)
     fake_hashes = generate_hashes(fake, num_hashes)
 
