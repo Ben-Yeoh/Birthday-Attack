@@ -12,9 +12,9 @@ def hash_file(file: io.TextIOBase) -> str:
             h.update(chunk)
     return h.hexdigest()
 
-def hash_string(str: str) -> str:
+def hash_string(string: str) -> str:
     h = hashlib.sha256()
-    h.update(str.encode('utf-8'))
+    h.update(string.encode('utf-8'))
     return h.hexdigest()
 
 def add_whitespace(text):
@@ -25,8 +25,12 @@ def add_whitespace(text):
         return text + " "
 
 def file_to_string(filename: str) -> str:
-    with open(file, "r") as f:
+    with open(filename, "r") as f:
         return f.read()
+
+def string_to_file(string: str, filename: str):
+    with open(f"output/{filename}", "w") as f:
+        f.write(string)
 
 def generate_hashes(file: io.TextIOBase, num_hashes: int) -> list:
     hashes = []
@@ -36,7 +40,7 @@ def generate_hashes(file: io.TextIOBase, num_hashes: int) -> list:
         s = add_whitespace(s)
     return hashes
 
-def birthday_attack(real: str, fake: str, digits = 2: int, num_hashes = 5000: int):
+def birthday_attack(real: str, fake: str, digits: int = 2, num_hashes: int = 5000):
     real_hashes = generate_hashes(real, num_hashes)
     fake_hashes = generate_hashes(fake, num_hashes)
     collisions = 0
@@ -44,6 +48,10 @@ def birthday_attack(real: str, fake: str, digits = 2: int, num_hashes = 5000: in
     for real_hash in real_hashes:
         for fake_hash in fake_hashes:
             if real_hash[-digits:] == fake_hash[-digits:]:
+                # Outputs only the first collision found to /output
+                if not collisions:
+                    string_to_file(real_hash, real)
+                    string_to_file(fake_hash, fake)
                 print(f"Collision found (last {digits} hex values):\n{real_hash}\n{fake_hash}\n")
                 collisions += 1
     print(f"Number of collisions with {2 * num_hashes} hashes: {collisions}")
