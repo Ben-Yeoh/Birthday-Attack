@@ -35,10 +35,18 @@ def string_to_file(string: str, filename: str):
 def generate_hashes(file: io.TextIOBase, num_hashes: int) -> list:
     hashes = []
     s = file_to_string(file)
+
     for i in range(num_hashes):
-        hashes.append(hash_string(s))
+        hash = hash_string(s)
+        hashes.append({ "hash": hash, "plaintext": s })
         s = add_whitespace(s)
+
     return hashes
+
+def output_hashes(real: str, fake: str, real_hash: object, fake_hash: object):
+    string_to_file("Real: {}\nFake: {}\n".format(real_hash["hash"], fake_hash["hash"]), "hashes.txt")
+    string_to_file(real_hash["plaintext"], real)
+    string_to_file(fake_hash["plaintext"], fake)
 
 def birthday_attack(real: str, fake: str, digits: int = 2, num_hashes: int = 5000):
     real_hashes = generate_hashes(real, num_hashes)
@@ -47,11 +55,9 @@ def birthday_attack(real: str, fake: str, digits: int = 2, num_hashes: int = 500
 
     for real_hash in real_hashes:
         for fake_hash in fake_hashes:
-            if real_hash[-digits:] == fake_hash[-digits:]:
-                # Outputs only the first collision found to /output
+            if real_hash["hash"][-digits:] == fake_hash["hash"][-digits:]:
                 if not collisions:
-                    string_to_file(real_hash, real)
-                    string_to_file(fake_hash, fake)
-                print(f"Collision found (last {digits} hex values):\n{real_hash}\n{fake_hash}\n")
+                    output_hashes(real, fake, real_hash, fake_hash)
+                print("Collision found (last {} hex values):\n{}\n{}\n".format(digits, real_hash["hash"], fake_hash["hash"]))
                 collisions += 1
     print(f"Number of collisions with {2 * num_hashes} hashes: {collisions}")
