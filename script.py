@@ -48,6 +48,15 @@ def output_hashes(real: str, fake: str, real_hash: object, fake_hash: object):
     string_to_file(real_hash["plaintext"], real)
     string_to_file(fake_hash["plaintext"], fake)
 
+# Outputs a real and fake text file which have SHA-256 hashes which match
+# for the last 2 hexadecimal characters.
+#
+# Arguments:
+#   - real: the relative file path of the real text file.
+#   - fake: the relative file path of the fake text file.
+# Optional arguments:
+#   - digits: how many hexadecimal characters to match both hashes to.
+#   - num_hashes: the number of hashes to compute for each text file, defaults at 5000.
 def birthday_attack(real: str, fake: str, digits: int = 2, num_hashes: int = 5000):
     real_hashes = generate_hashes(real, num_hashes)
     fake_hashes = generate_hashes(fake, num_hashes)
